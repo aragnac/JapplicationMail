@@ -320,16 +320,17 @@ public class mailbox_frame extends javax.swing.JFrame {
             System.out.println("Liste des messages : ");
 
             DefaultTableModel model = (DefaultTableModel) mailJT.getModel();
-
-            for (int i=0; i<30; i++)//msg.length
+            int j = 0;
+            for (int i = msg.length - 1; i >= 150; i--)//msg.length
             {
                 //if (msg[i].isMimeType("text/plain"))
                 //{
                     //System.out.println("Expéditeur : " + msg[i].getFrom() [0]);
                     //System.out.println("Sujet = " + msg[i].getSubject());
                     //System.out.println("Texte : " + msg[i].getContent());
-                    model.insertRow(i,  new Object[]{msg[i].getFrom() [0], msg[i].getSubject(), msg[i].getSentDate()});
-                //}
+                    model.insertRow(j,  new Object[]{msg[i].getFrom() [0], msg[i].getSubject(), msg[i].getSentDate()});
+                    j++;
+                    //}
             }
 
             mailJT.setModel(model);
