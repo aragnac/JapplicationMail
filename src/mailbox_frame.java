@@ -80,7 +80,7 @@ public class mailbox_frame extends javax.swing.JFrame {
     private void initComponents() {
 
         jToolBar1 = new javax.swing.JToolBar();
-        jButton1 = new javax.swing.JButton();
+        connectionButton = new javax.swing.JButton();
         actualisationButton = new javax.swing.JButton();
         mailTabbedPane = new javax.swing.JTabbedPane();
         mailPanel = new javax.swing.JPanel();
@@ -96,6 +96,7 @@ public class mailbox_frame extends javax.swing.JFrame {
         messageTextArea = new javax.swing.JTextArea();
         messageLabel = new javax.swing.JLabel();
         sendButton = new javax.swing.JButton();
+        attachButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         nbrMessLabel = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -105,11 +106,16 @@ public class mailbox_frame extends javax.swing.JFrame {
 
         jToolBar1.setRollover(true);
 
-        jButton1.setText("Nouveau message");
-        jButton1.setFocusable(false);
-        jButton1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jToolBar1.add(jButton1);
+        connectionButton.setText("Connexion");
+        connectionButton.setFocusable(false);
+        connectionButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        connectionButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        connectionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectionButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(connectionButton);
 
         actualisationButton.setText("Actualiser");
         actualisationButton.setFocusable(false);
@@ -124,13 +130,13 @@ public class mailbox_frame extends javax.swing.JFrame {
 
         mailJT.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null},
-                {null, null, null},
-                {null, null, null},
-                {null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Expéditeur", "Sujet", "Date"
+                "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
         jScrollPane1.setViewportView(mailJT);
@@ -139,7 +145,7 @@ public class mailbox_frame extends javax.swing.JFrame {
         mailPanel.setLayout(mailPanelLayout);
         mailPanelLayout.setHorizontalGroup(
             mailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
         );
         mailPanelLayout.setVerticalGroup(
             mailPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -169,6 +175,13 @@ public class mailbox_frame extends javax.swing.JFrame {
             }
         });
 
+        attachButton.setText("Joindre");
+        attachButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                attachButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout newMailTabLayout = new javax.swing.GroupLayout(newMailTab);
         newMailTab.setLayout(newMailTabLayout);
         newMailTabLayout.setHorizontalGroup(
@@ -177,21 +190,22 @@ public class mailbox_frame extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(newMailTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(newMailTabLayout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(newMailTabLayout.createSequentialGroup()
                         .addGroup(newMailTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(objectLabel)
                             .addComponent(toLabel)
                             .addComponent(messageLabel))
                         .addGap(18, 18, 18)
                         .addGroup(newMailTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(newMailTabLayout.createSequentialGroup()
+                                .addComponent(attachButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(sendButton))
                             .addComponent(toTF)
                             .addComponent(objectTF)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE)))
-                    .addGroup(newMailTabLayout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, newMailTabLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(sendButton)))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         newMailTabLayout.setVerticalGroup(
@@ -212,7 +226,9 @@ public class mailbox_frame extends javax.swing.JFrame {
                 .addGap(10, 10, 10)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(sendButton)
+                .addGroup(newMailTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sendButton)
+                    .addComponent(attachButton))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -240,8 +256,8 @@ public class mailbox_frame extends javax.swing.JFrame {
                     .addComponent(nbrMessLabel)
                     .addComponent(jLabel3)
                     .addComponent(nbrNewMessLabel))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(mailTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 638, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(mailTabbedPane)
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -296,6 +312,17 @@ public class mailbox_frame extends javax.swing.JFrame {
             System.out.println("Errreur sur message : " + e.getMessage());
         }
     }//GEN-LAST:event_sendButtonActionPerformed
+
+    private void attachButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attachButtonActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_attachButtonActionPerformed
+
+    private void connectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectionButtonActionPerformed
+        // TODO add your handling code here:
+        loginDialog login = new loginDialog(this, true);
+        login.setVisible(true);
+        
+    }//GEN-LAST:event_connectionButtonActionPerformed
 
     private void RecepetionMessage(){
 
@@ -401,7 +428,8 @@ public class mailbox_frame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton actualisationButton;
-    private javax.swing.JButton jButton1;
+    private javax.swing.JButton attachButton;
+    private javax.swing.JButton connectionButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
