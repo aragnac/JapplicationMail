@@ -9,11 +9,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.File;
+import java.util.List;
 import java.util.Properties;
-import java.util.Vector;
 //import com.sun.mail.*;
 
 /**
@@ -24,50 +22,16 @@ public class mailbox_frame extends javax.swing.JFrame {
 
     //private static String host = "u2.wildness.loc";
     //private String exp = "vilvens@u2.wildness.loc";
+    private String mail;
+    private String password;
     private Properties prop = System.getProperties();
     private Session sess;
     private Properties p = new Properties();
+    private List<File> listFiles;
 
     public mailbox_frame() {
         initComponents();
-
-        /** PREPARATION ENVOI / RECEPTION MESSAGE**/
-        /*prop.put("mail.smtp.host", host);
-        prop.put("mail.pop3.host", host);
-        prop.put("mail.disable.top", true);
-        sess = Session.getDefaultInstance(prop, null);*/
-
-        prop.put("mail.smtp.host", propertiesReader.getProperties("SERVERENVOIE"));
-        prop.put("mail.smtp.port", propertiesReader.getProperties("PORTENVOIE"));
-        prop.put("mail.from", propertiesReader.getProperties("MAIL"));
-        prop.put("mail.smtp.starttls.enable", "true");
-        prop.put("mail.smtp.starttls.required", "true");
-        prop.put("mail.smtp.auth", "true");
-        /*prop.setProperty("mail.smtp.ssl.enable", "true");
-        prop.setProperty("mail.smtp.ssl.socketFactory.class",
-                "DummySSLSocketFactory");
-        prop.setProperty("mail.smtp.ssl.socketFactory.fallback", "false");*/
-        prop.put("mail.debug", "true");
-        prop.put("file.encoding", "iso-8859-1");
-        prop.put("mail.smtp.ssl.trust", "smtp.gmail.com");
-
-
-
-        //Propriété pour la réception
-        prop.put("mail.pop3.host", propertiesReader.getProperties("SERVERRECEP"));
-        prop.put("mail.pop3.auth","true");
-        prop.put("mail.pop3.port", propertiesReader.getProperties("PORTRECEP"));
-        prop.put("mail.pop3.starttls.enable","true");
-        prop.put("mail.disable.top", "true");
-        prop.put("mail.pop3.disablecapa", "true");
-        prop.put("mail.pop3.socketFactory" , propertiesReader.getProperties ("PORTRECEP") );
-        prop.put("mail.pop3.socketFactory.class" , "javax.net.ssl.SSLSocketFactory" );
-
-        sess = Session.getInstance(prop, new Authenticator() {
-            protected PasswordAuthentication  getPasswordAuthentication() {
-                return new PasswordAuthentication(propertiesReader.getProperties("MAIL"), propertiesReader.getProperties("PWD"));}
-        });
-
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -97,6 +61,7 @@ public class mailbox_frame extends javax.swing.JFrame {
         messageLabel = new javax.swing.JLabel();
         sendButton = new javax.swing.JButton();
         attachButton = new javax.swing.JButton();
+        filesLabel = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
         nbrMessLabel = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -182,6 +147,8 @@ public class mailbox_frame extends javax.swing.JFrame {
             }
         });
 
+        filesLabel.setText("files");
+
         javax.swing.GroupLayout newMailTabLayout = new javax.swing.GroupLayout(newMailTab);
         newMailTab.setLayout(newMailTabLayout);
         newMailTabLayout.setHorizontalGroup(
@@ -205,7 +172,10 @@ public class mailbox_frame extends javax.swing.JFrame {
                                 .addComponent(sendButton))
                             .addComponent(toTF)
                             .addComponent(objectTF)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE))))
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 546, Short.MAX_VALUE)
+                            .addGroup(newMailTabLayout.createSequentialGroup()
+                                .addComponent(filesLabel)
+                                .addGap(0, 0, Short.MAX_VALUE)))))
                 .addContainerGap())
         );
         newMailTabLayout.setVerticalGroup(
@@ -222,14 +192,16 @@ public class mailbox_frame extends javax.swing.JFrame {
                     .addComponent(objectLabel)
                     .addComponent(objectTF, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(messageLabel)
+                .addGroup(newMailTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(messageLabel)
+                    .addComponent(filesLabel))
                 .addGap(10, 10, 10)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 198, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(newMailTabLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sendButton)
                     .addComponent(attachButton))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(27, Short.MAX_VALUE))
         );
 
         mailTabbedPane.addTab("Nouveau message", newMailTab);
@@ -266,7 +238,7 @@ public class mailbox_frame extends javax.swing.JFrame {
                 .addComponent(jToolBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(mailTabbedPane, javax.swing.GroupLayout.DEFAULT_SIZE, 414, Short.MAX_VALUE)
+                    .addComponent(mailTabbedPane)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -310,27 +282,38 @@ public class mailbox_frame extends javax.swing.JFrame {
         catch (Exception e)
         {
             System.out.println("Errreur sur message : " + e.getMessage());
+            JOptionPane.showMessageDialog(null, e.getMessage());
         }
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void attachButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attachButtonActionPerformed
-        // TODO add your handling code here:
+        attachDialog attach = new attachDialog(this, true);
+        attach.setVisible(true);
+
+        filesLabel.setText(filesLabel.getText() + ", " + attach.GetFile().getName());
+
     }//GEN-LAST:event_attachButtonActionPerformed
 
     private void connectionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectionButtonActionPerformed
-        // TODO add your handling code here:
         loginDialog login = new loginDialog(this, true);
         login.setVisible(true);
+        mail = login.getMail();
+        password = login.getPassword();
+        login.dispose();
 
-        
+        /** PREPARATION ENVOI / RECEPTION MESSAGE**/
+        CreateSession();
+        JOptionPane.showMessageDialog(null, "Connecté avec succès ! \n Récupération de vos messages en cours ...");
+        RecepetionMessage();
+
     }//GEN-LAST:event_connectionButtonActionPerformed
 
     private void RecepetionMessage(){
 
         try
         {
-            String user = propertiesReader.getProperties("MAIL");
-            String pwd = propertiesReader.getProperties("PWD");
+            String user = mail;
+            String pwd = password;
 
             //Obtention d'un objet store
             Store st = sess.getStore("pop3");
@@ -349,7 +332,7 @@ public class mailbox_frame extends javax.swing.JFrame {
 
             DefaultTableModel model = (DefaultTableModel) mailJT.getModel();
             int j = 0;
-            for (int i = msg.length - 1; i >= 150; i--)//msg.length
+            for (int i = msg.length - 1; i >= 180; i--)//msg.length
             {
                 //if (msg[i].isMimeType("text/plain"))
                 //{
@@ -370,6 +353,7 @@ public class mailbox_frame extends javax.swing.JFrame {
         }
     catch (MessagingException e) {
         System.out.println("Errreur sur message : " + e.getMessage());
+        JOptionPane.showMessageDialog(null, e.getMessage());
     }
     catch (Exception e)
         {
@@ -377,19 +361,41 @@ public class mailbox_frame extends javax.swing.JFrame {
         }
     }
 
-    private void LoadPropertiesFichier()
-    {
-        InputStream input;
-        try
-        {
-            input = new FileInputStream(System.getProperty("user.dir") + System.getProperty("file.separator") + "data" + System.getProperty("file.separator") + "config.properties");
+    private void CreateSession(){
 
-            p.load(input);
-        }
-        catch (IOException ex)
-        {
-            System.out.println("Erreur fichier properties " + ex);
-        }
+        /** PREPARATION ENVOI / RECEPTION MESSAGE**/
+        /*prop.put("mail.smtp.host", host);
+        prop.put("mail.pop3.host", host);
+        prop.put("mail.disable.top", true);
+        sess = Session.getDefaultInstance(prop, null);*/
+
+        prop.put("mail.smtp.host", propertiesReader.getProperties("SERVERENVOIE"));
+        prop.put("mail.smtp.port", propertiesReader.getProperties("PORTENVOIE"));
+        prop.put("mail.from", mail);
+        prop.put("mail.smtp.starttls.enable", "true");
+        prop.put("mail.smtp.starttls.required", "true");
+        prop.put("mail.smtp.auth", "true");
+        prop.put("mail.debug", "true");
+        prop.put("file.encoding", "iso-8859-1");
+        prop.put("mail.smtp.ssl.trust", "smtp.gmail.com");
+
+
+
+        //Propriété pour la réception
+        prop.put("mail.pop3.host", propertiesReader.getProperties("SERVERRECEP"));
+        prop.put("mail.pop3.auth","true");
+        prop.put("mail.pop3.port", propertiesReader.getProperties("PORTRECEP"));
+        prop.put("mail.pop3.starttls.enable","true");
+        prop.put("mail.disable.top", "true");
+        prop.put("mail.pop3.disablecapa", "true");
+        prop.put("mail.pop3.socketFactory" , propertiesReader.getProperties ("PORTRECEP") );
+        prop.put("mail.pop3.socketFactory.class" , "javax.net.ssl.SSLSocketFactory" );
+
+        sess = Session.getInstance(prop, new Authenticator() {
+            protected PasswordAuthentication  getPasswordAuthentication() {
+                return new PasswordAuthentication(mail, propertiesReader.getProperties("PWD"));}
+        });
+
     }
 
     /**
@@ -431,6 +437,7 @@ public class mailbox_frame extends javax.swing.JFrame {
     private javax.swing.JButton actualisationButton;
     private javax.swing.JButton attachButton;
     private javax.swing.JButton connectionButton;
+    private javax.swing.JLabel filesLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

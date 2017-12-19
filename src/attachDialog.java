@@ -4,18 +4,21 @@
  * and open the template in the editor.
  */
 
+import java.io.File;
+
 /**
  *
  * @author Nicolas
  */
 public class attachDialog extends javax.swing.JDialog {
 
-    /**
-     * Creates new form attachDialog
-     */
+    String _path;
+    File _file;
+
     public attachDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -53,8 +56,19 @@ public class attachDialog extends javax.swing.JDialog {
 
     private void browseJFileChooserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseJFileChooserActionPerformed
         // TODO add your handling code here:
-        if(browseJFileChooser.getText)
+        _path = browseJFileChooser.getSelectedFile().getAbsolutePath();
+        _file = browseJFileChooser.getSelectedFile();
+
+        this.setVisible(false);
     }//GEN-LAST:event_browseJFileChooserActionPerformed
+
+    public String GetFilePath(){
+        return _path;
+    }
+
+    public File GetFile(){
+        return _file;
+    }
 
     /**
      * @param args the command line arguments

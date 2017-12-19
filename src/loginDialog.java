@@ -4,6 +4,8 @@
  * and open the template in the editor.
  */
 
+import java.awt.*;
+
 /**
  *
  * @author Nicolas
@@ -15,7 +17,9 @@ public class loginDialog extends javax.swing.JDialog {
      */
     public loginDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+
         initComponents();
+        this.setLocationRelativeTo(null);
     }
 
     /**
@@ -91,10 +95,16 @@ public class loginDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void loginButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginButtonActionPerformed
-        // TODO add your handling code here:
         setVisible(false);
-        dispose();
     }//GEN-LAST:event_loginButtonActionPerformed
+
+    public String getMail(){
+        return mailTF.getText();
+    }
+
+    public String getPassword(){
+        return passwordTF.getText();
+    }
 
     /**
      * @param args the command line arguments
