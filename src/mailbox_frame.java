@@ -321,6 +321,7 @@ public class mailbox_frame extends javax.swing.JFrame {
         // TODO add your handling code here:
         loginDialog login = new loginDialog(this, true);
         login.setVisible(true);
+
         
     }//GEN-LAST:event_connectionButtonActionPerformed
 
