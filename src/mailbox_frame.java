@@ -9,7 +9,9 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Properties;
 //import com.sun.mail.*;
@@ -28,6 +30,7 @@ public class mailbox_frame extends javax.swing.JFrame {
     private Session sess;
     private Properties p = new Properties();
     private List<File> listFiles;
+    private Message [] msg;
 
     public mailbox_frame() {
         initComponents();
@@ -95,15 +98,22 @@ public class mailbox_frame extends javax.swing.JFrame {
 
         mailJT.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Expéditeur", "Titre", "Date"
             }
         ));
+        mailJT.setCellSelectionEnabled(false);
+        mailJT.setEnabled(false);
+        mailJT.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                mailJTMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(mailJT);
 
         javax.swing.GroupLayout mailPanelLayout = new javax.swing.GroupLayout(mailPanel);
@@ -308,6 +318,16 @@ public class mailbox_frame extends javax.swing.JFrame {
 
     }//GEN-LAST:event_connectionButtonActionPerformed
 
+    private void mailJTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mailJTMouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON1 && evt.getClickCount() == 2) {
+            int row = mailJT.rowAtPoint(evt.getPoint());
+            int mess = msg.length - row +1;
+
+            readMessage read = new readMessage(this, true, msg[mess]);
+            read.setVisible(true);
+        }
+    }//GEN-LAST:event_mailJTMouseClicked
+
     private void RecepetionMessage(){
 
         try
@@ -325,14 +345,14 @@ public class mailbox_frame extends javax.swing.JFrame {
 
             //Reception des messages
 
-            Message msg[] = f.getMessages();
+            msg = f.getMessages();
             nbrMessLabel.setText( f.getMessageCount() + "messages");
             nbrNewMessLabel.setText( f.getNewMessageCount() + "messages");
             System.out.println("Liste des messages : ");
 
             DefaultTableModel model = (DefaultTableModel) mailJT.getModel();
             int j = 0;
-            for (int i = msg.length - 1; i >= 180; i--)//msg.length
+            for (int i = msg.length - 1; i >= 220; i--)//msg.length
             {
                 //if (msg[i].isMimeType("text/plain"))
                 //{
