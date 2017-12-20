@@ -15,10 +15,13 @@ public class attachDialog extends javax.swing.JDialog {
     String _path;
     File _file;
 
-    public attachDialog(java.awt.Frame parent, boolean modal) {
+    public attachDialog(java.awt.Frame parent, boolean modal, String action) {
         super(parent, modal);
         initComponents();
         this.setLocationRelativeTo(null);
+        if(action.equals("save")){
+            this.browseJFileChooser.setApproveButtonText("Save");
+        }
     }
 
     /**
@@ -100,7 +103,7 @@ public class attachDialog extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                attachDialog dialog = new attachDialog(new javax.swing.JFrame(), true);
+                attachDialog dialog = new attachDialog(new javax.swing.JFrame(), true, "save");
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {

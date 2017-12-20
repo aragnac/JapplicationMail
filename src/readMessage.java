@@ -6,6 +6,9 @@
 
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.Part;
+import javax.mail.internet.MimeBodyPart;
 import java.io.IOException;
 
 
@@ -15,10 +18,14 @@ import java.io.IOException;
  */
 public class readMessage extends javax.swing.JDialog {
 
-    Message _message;
+    private Message _message;
+    private String filePath;
+    private java.awt.Frame _parent;
+    private MimeBodyPart _part;
 
     public readMessage(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
+        _parent = parent;
         initComponents();
         this.setLocationRelativeTo(null);
     }
@@ -32,6 +39,25 @@ public class readMessage extends javax.swing.JDialog {
             fromLabel.setText( mess.getFrom() [0].toString());
             objectLabel.setText(mess.getSubject());
             messageTA.setText(mess.getContent().toString());
+
+            // suppose 'message' is an object of type Message
+            String contentType = mess.getContentType();
+
+            if (contentType.contains("multipart")) {
+                Multipart multiPart = (Multipart) mess.getContent();
+
+                for (int i = 0; i < multiPart.getCount(); i++) {
+                    MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(i);
+                    if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
+                        attachLabel.setText(part.getFileName());
+                        _part = part;
+                    }
+                    else {
+                        // this part may be the message content
+                        messageTA.setText(part.getContent().toString());
+                    }
+                }
+            }
 
         } catch (MessagingException e) {
             e.printStackTrace();
@@ -59,6 +85,7 @@ public class readMessage extends javax.swing.JDialog {
         messageTA = new javax.swing.JTextArea();
         attachLabel = new javax.swing.JLabel();
         answerButton = new javax.swing.JButton();
+        downloadButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -85,6 +112,13 @@ public class readMessage extends javax.swing.JDialog {
             }
         });
 
+        downloadButton.setText("Télécharger");
+        downloadButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                downloadButtonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -92,30 +126,33 @@ public class readMessage extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addComponent(jLabel1)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(fromLabel))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(jLabel5)
-                                    .addComponent(jLabel2))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGap(12, 12, 12)
+                            .addComponent(jLabel1)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(fromLabel))
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel5)
+                                .addComponent(jLabel2))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addGroup(layout.createSequentialGroup()
                                     .addComponent(objectLabel)
-                                    .addComponent(attachLabel))))
-                        .addContainerGap(273, Short.MAX_VALUE))
+                                    .addGap(0, 0, Short.MAX_VALUE))
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(attachLabel)
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(downloadButton)))))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
+                        .addGap(0, 41, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(answerButton)
-                .addGap(137, 137, 137))
+                .addGap(149, 149, 149))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -131,12 +168,13 @@ public class readMessage extends javax.swing.JDialog {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(attachLabel))
+                    .addComponent(attachLabel)
+                    .addComponent(downloadButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(answerButton)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
@@ -145,6 +183,19 @@ public class readMessage extends javax.swing.JDialog {
     private void answerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_answerButtonActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_answerButtonActionPerformed
+
+    private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
+        attachDialog attach = new attachDialog(_parent, true, "save");
+        attach.setVisible(true);
+        filePath = attach.GetFilePath();
+        try {
+            _part.saveFile(filePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }//GEN-LAST:event_downloadButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -192,6 +243,7 @@ public class readMessage extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton answerButton;
     private javax.swing.JLabel attachLabel;
+    private javax.swing.JButton downloadButton;
     private javax.swing.JLabel fromLabel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

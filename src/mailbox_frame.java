@@ -319,7 +319,7 @@ public class mailbox_frame extends javax.swing.JFrame {
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void attachButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_attachButtonActionPerformed
-        attachDialog attach = new attachDialog(this, true);
+        attachDialog attach = new attachDialog(this, true, "open");
         attach.setVisible(true);
 
         filesLabel.setText(filesLabel.getText() + ", " + attach.GetFile().getName());
@@ -345,7 +345,7 @@ public class mailbox_frame extends javax.swing.JFrame {
     private void mailJTMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_mailJTMouseClicked
         if (evt.getButton() == MouseEvent.BUTTON1 && evt.getClickCount() == 2) {
             int row = mailJT.rowAtPoint(evt.getPoint());
-            int mess = msg.length - row +1;
+            int mess = msg.length - row - 1;
 
             readMessage read = new readMessage(this, true, msg[mess]);
             read.setVisible(true);
