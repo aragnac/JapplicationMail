@@ -408,6 +408,7 @@ public class mailbox_frame extends javax.swing.JFrame {
                     //System.out.println("Texte : " + msg[i].getContent());
                     model.insertRow(j,  new Object[]{msg[i].getFrom() [0], msg[i].getSubject(), msg[i].getSentDate()});
                     j++;
+                    msg[i].getAllHeaders();
                     //}
             }
 
