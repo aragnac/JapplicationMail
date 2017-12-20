@@ -41,12 +41,17 @@ public class mailbox_frame extends javax.swing.JFrame {
     private String filePath;
     private int nbrMsg;
     private boolean newMsg = false;
+    private Multipart multipart;
 
     public mailbox_frame() {
         initComponents();
         filesLabel.setText("");
         this.setLocationRelativeTo(null);
 
+        // première allocation. réallouer après chaque envoie.
+        multipart = new MimeMultipart();
+
+        //Lancement du thread timer qui check si nouveau messages.
         TimerTask timerTask = new TimerTask() {
 
             @Override
@@ -59,7 +64,7 @@ public class mailbox_frame extends javax.swing.JFrame {
 
         Timer timer = new Timer("NewMessage");//create a new Timer
 
-        timer.scheduleAtFixedRate(timerTask, 30, 60000);//1 minutes
+        timer.scheduleAtFixedRate(timerTask, 30, 300000);//5 minutes
     }
 
     /**
@@ -302,20 +307,14 @@ public class mailbox_frame extends javax.swing.JFrame {
             msg.setFrom (new InternetAddress(mail));
             msg.setRecipient (Message.RecipientType.TO, new InternetAddress (toTF.getText()));
             msg.setSubject(objectTF.getText());
-            msg.setText (messageTextArea.getText());
+            //msg.setText (messageTextArea.getText());
+
+            BodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(messageTextArea.getText());
+            multipart.addBodyPart(messageBodyPart);
 
             /** Si message avec pièce jointes alors **/
             if(!filesLabel.getText().equals("")) {
-                // Create a multipart message
-                Multipart multipart = new MimeMultipart();
-
-                // Part two is attachment
-                BodyPart messageBodyPart = new MimeBodyPart();
-                String filename = filePath;
-                DataSource source = new FileDataSource(filename);
-                messageBodyPart.setDataHandler(new DataHandler(source));
-                messageBodyPart.setFileName(filename);
-                multipart.addBodyPart(messageBodyPart);
 
                 // Send the complete message parts
                 msg.setContent(multipart);
@@ -323,6 +322,7 @@ public class mailbox_frame extends javax.swing.JFrame {
 
             System.out.println("Envoi du message");
             Transport.send(msg);
+            multipart = new MimeMultipart();
             JOptionPane.showMessageDialog(null, "Message envoyé !");
         }
         catch (MessagingException e)
@@ -343,6 +343,18 @@ public class mailbox_frame extends javax.swing.JFrame {
         filesLabel.setText(filesLabel.getText() + ", " + attach.GetFile().getName());
         //listFiles.add(attach.GetFile());
         filePath = attach.GetFilePath();
+
+        //Ajout de la pièce attaché au message
+        BodyPart messageBodyPart = new MimeBodyPart();
+
+        DataSource source = new FileDataSource(filePath);
+        try {
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(attach.GetFile().getName());
+            multipart.addBodyPart(messageBodyPart);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
 
     }//GEN-LAST:event_attachButtonActionPerformed
 

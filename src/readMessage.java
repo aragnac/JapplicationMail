@@ -20,7 +20,7 @@ public class readMessage extends javax.swing.JDialog {
     private Message _message;
     private String filePath;
     private java.awt.Frame _parent;
-    private MimeBodyPart _part;
+    private MimeBodyPart[] _part;
 
     public readMessage(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -33,6 +33,7 @@ public class readMessage extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
 
+        _part = new MimeBodyPart[10];
         _message = mess;
         try {
             fromLabel.setText( mess.getFrom() [0].toString());
@@ -48,8 +49,8 @@ public class readMessage extends javax.swing.JDialog {
                 for (int i = 0; i < multiPart.getCount(); i++) {
                     MimeBodyPart part = (MimeBodyPart) multiPart.getBodyPart(i);
                     if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition())) {
-                        attachLabel.setText(part.getFileName());
-                        _part = part;
+                        attachLabel.setText(attachLabel.getText() + ", " + part.getFileName());
+                        _part[i] = part;
                     }
                     else {
                         // this part may be the message content
@@ -196,9 +197,11 @@ public class readMessage extends javax.swing.JDialog {
     private void downloadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downloadButtonActionPerformed
         attachDialog attach = new attachDialog(_parent, true, "save");
         attach.setVisible(true);
-        filePath = attach.GetFilePath();
+        filePath = attach.GetFilePath() + "\\";
         try {
-            _part.saveFile(filePath);
+            for(int i = 0; i < _part.length; i++) {
+                _part[i].saveFile(filePath+_part[i].getFileName());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (MessagingException e) {

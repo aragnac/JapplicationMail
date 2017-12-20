@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
 
+import javax.swing.*;
 import java.io.File;
 
 /**
@@ -21,6 +22,7 @@ public class attachDialog extends javax.swing.JDialog {
         this.setLocationRelativeTo(null);
         if(action.equals("save")){
             this.browseJFileChooser.setApproveButtonText("Save");
+            this.browseJFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         }
     }
 
