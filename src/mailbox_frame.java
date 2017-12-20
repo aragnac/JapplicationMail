@@ -4,9 +4,14 @@
  * and open the template in the editor.
  */
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.MouseEvent;
@@ -31,9 +36,11 @@ public class mailbox_frame extends javax.swing.JFrame {
     private Properties p = new Properties();
     private List<File> listFiles;
     private Message [] msg;
+    private String filePath;
 
     public mailbox_frame() {
         initComponents();
+        filesLabel.setText("");
         this.setLocationRelativeTo(null);
     }
 
@@ -273,14 +280,29 @@ public class mailbox_frame extends javax.swing.JFrame {
 
         try
         {
-            String dest = toTF.getText();
-            String sujet = objectTF.getText();
-            String texte = messageTextArea.getText();
             MimeMessage msg = new MimeMessage (sess);
-            msg.setFrom (new InternetAddress(propertiesReader.getProperties("MAIL")));
-            msg.setRecipient (Message.RecipientType.TO, new InternetAddress (dest));
-            msg.setSubject(sujet);
-            msg.setText (texte);
+            msg.setFrom (new InternetAddress(mail));
+            msg.setRecipient (Message.RecipientType.TO, new InternetAddress (toTF.getText()));
+            msg.setSubject(objectTF.getText());
+            msg.setText (messageTextArea.getText());
+
+            /** Si message avec pièce jointes alors **/
+            if(!filesLabel.getText().equals("")) {
+                // Create a multipar message
+                Multipart multipart = new MimeMultipart();
+
+                // Part two is attachment
+                BodyPart messageBodyPart = new MimeBodyPart();
+                String filename = filePath;
+                DataSource source = new FileDataSource(filename);
+                messageBodyPart.setDataHandler(new DataHandler(source));
+                messageBodyPart.setFileName(filename);
+                multipart.addBodyPart(messageBodyPart);
+
+                // Send the complete message parts
+                msg.setContent(multipart);
+            }
+
             System.out.println("Envoi du message");
             Transport.send(msg);
             JOptionPane.showMessageDialog(null, "Message envoyé !");
@@ -301,6 +323,8 @@ public class mailbox_frame extends javax.swing.JFrame {
         attach.setVisible(true);
 
         filesLabel.setText(filesLabel.getText() + ", " + attach.GetFile().getName());
+        //listFiles.add(attach.GetFile());
+        filePath = attach.GetFilePath();
 
     }//GEN-LAST:event_attachButtonActionPerformed
 
