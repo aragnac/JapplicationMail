@@ -19,6 +19,8 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 //import com.sun.mail.*;
 
 /**
@@ -37,11 +39,27 @@ public class mailbox_frame extends javax.swing.JFrame {
     private List<File> listFiles;
     private Message [] msg;
     private String filePath;
+    private int nbrMsg;
+    private boolean newMsg = false;
 
     public mailbox_frame() {
         initComponents();
         filesLabel.setText("");
         this.setLocationRelativeTo(null);
+
+        TimerTask timerTask = new TimerTask() {
+
+            @Override
+            public void run() {
+                RecepetionMessage();
+                if(newMsg)
+                    JOptionPane.showMessageDialog(null, "Vous avez des nouveaux messages !");
+            }
+        };
+
+        Timer timer = new Timer("NewMessage");//create a new Timer
+
+        timer.scheduleAtFixedRate(timerTask, 30, 60000);//1 minutes
     }
 
     /**
@@ -288,7 +306,7 @@ public class mailbox_frame extends javax.swing.JFrame {
 
             /** Si message avec pièce jointes alors **/
             if(!filesLabel.getText().equals("")) {
-                // Create a multipar message
+                // Create a multipart message
                 Multipart multipart = new MimeMultipart();
 
                 // Part two is attachment
@@ -371,6 +389,11 @@ public class mailbox_frame extends javax.swing.JFrame {
 
             msg = f.getMessages();
             nbrMessLabel.setText( f.getMessageCount() + "messages");
+            if(nbrMsg < f.getMessageCount())
+                newMsg = true;
+            else
+                newMsg = false;
+            nbrMsg = f.getMessageCount();
             nbrNewMessLabel.setText( f.getNewMessageCount() + "messages");
             System.out.println("Liste des messages : ");
 
